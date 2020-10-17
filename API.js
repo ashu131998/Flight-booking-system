@@ -6,6 +6,7 @@ const { table } = require('console');
 const express = require("express"); 
 const app = express(); 
 const bodyParser = require("body-parser") 
+
 // Define routes here ... 
 const pool = mysql.createPool({
   host: 'localhost',
@@ -28,7 +29,9 @@ var con = mysql.createConnection({
   password: "Ashu@2703",
   database: "mydb"
 });
+var reo ='<html><head><title>Booking information</title></head><body><h1>Booking information</h1>{${table}}</body></html>';
 
+      var sql ='SELECT name,flight_no, source,destination,start,end,capacity FROM flight order by name';
 con.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
@@ -56,11 +59,11 @@ con.connect(function(err) {
       res.redirect('/');
     }
     if(x=='3'){
-      var name=req.body.name;
-      sh.show(name,app,pool);
+      
+      
+      sh.show(name,app,pool,reo,sql);
       
       res.redirect('http://localhost:3000/show');
-      
       
 
     }
