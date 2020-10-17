@@ -21,7 +21,46 @@ function setResHtml(sql, cb){
         table +='<tr><td>'+ (i+1) +'</td><td>'+ res[i].name +'</td><td>'+ res[i].flight_no +'</td><td>'+ res[i].source +'</td><td>'+res[i].destination +'</td><td>'+res[i].start +'</td><td>'+res[i].end +'</td><td>'+res[i].capacity +'</td></tr>';
       }
       table ='<table border="1"><tr><th>Nr.</th><th>Name</th><th>Flight_no</th><th>Source</th><th>Destination</th><th>Start</th><th>End</th><th>Capacity</th></tr>'+ table +'</table>';
+module.exports.show = function (nm,app,pool,reo,sql) {
 
+const http = require('http');
+const mysql = require('mysql');
+const express = require('express')
+
+//html string that will be send to browser
+function setResHtml(sql, cb){
+  
+  pool.getConnection((err, con)=>{
+    if(err) throw err;
+    con.query(sql, (err, res, cols)=>{
+      if(err) throw err;
+      
+      var table =''; //to store html table
+      
+      for(var i=0; i<res.length; i++){
+
+        table +='<tr><td>'+ (i+1) +'</td><td>'+ res[i].name +'</td><td>'+ res[i].flight_no +'</td><td>'+ res[i].source +'</td><td>'+res[i].destination +'</td><td>'+res[i].start +'</td><td>'+res[i].end +'</td><td>'+res[i].capacity +'</td></tr>';
+      }
+      table ='<table border="1"><tr><th>Nr.</th><th>Name</th><th>Flight_no</th><th>Source</th><th>Destination</th><th>Start</th><th>End</th><th>Capacity</th></tr>'+ table +'</table>';
+
+      return cb(table);
+    });
+  });
+}
+
+var sql1=sql;
+app.get('/show',(req, res)=>{
+  
+  setResHtml(sql1, resql=>{
+    
+    reo = reo.replace('{${table}}', resql);
+    res.send(reo);
+    reo = reo.replace( resql,'{${table}}');
+    
+    res.end();
+  });
+});
+};
       return cb(table);
     });
   });
